@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: auth
-          image: c8cb8aec075e:latest
+          image: akra20m/auth
           env:
             - name: JWT_KEY
               valueFrom:

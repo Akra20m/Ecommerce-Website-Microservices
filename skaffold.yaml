@@ -8,11 +8,19 @@ build:
   local:
     push: false
   artifacts:
-    - image: c8cb8aec075e
+    - image: akra20m/auth
       context: auth
       docker:
         dockerfile: Dockerfile
       sync:
         manual:
           - src: 'src/**/*.ts'
+            dest: .
+    - image: akra20m/client
+      context: client
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: '**/*.js'
             dest: .

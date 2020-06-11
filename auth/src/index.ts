@@ -6,8 +6,9 @@ import cookieSession from 'cookie-session';
 import { body } from 'express-validator';
 import jwt from 'jsonwebtoken';
 import { validateRequest } from './middlewares/validate-request';
-import { User } from './models/user';
 import { errorHandler } from './middlewares/error-handler';
+import { currentUser } from './middlewares/current-user';
+import { User } from './models/user';
 import { NotFoundError } from './errors/not-found';
 import { BadRequestError } from './errors/bad-request';
 import { Password } from './helper/password';
@@ -24,7 +25,7 @@ app.use(
 );
 
 app
-  .route('/users/signup')
+  .route('/api/users/signup')
   .post(
     [
       body('email').isEmail().withMessage('Email is not valid'),
@@ -57,7 +58,7 @@ app
   );
 
 app
-  .route('/users/signin')
+  .route('/api/users/signin')
   .post(
     [
       body('email').isEmail().withMessage('Email is not valid'),
@@ -91,19 +92,11 @@ app
     }
   );
 
-app.route('/users/currentuser').get((req, res) => {
-  if (!req.session?.jwt) {
-    return res.send({ currentUser: null });
-  }
-  try {
-    const payload = jwt.verify(req.session.jwt, process.env.JWT_KEY!);
-    res.send({ currentUser: payload });
-  } catch (err) {
-    res.send({ currentUser: null });
-  }
+app.route('/api/users/currentuser').get(currentUser, (req, res) => {
+  res.send({ currentUser: req.currentUser || null });
 });
 
-app.route('/users/signout').post((req, res) => {
+app.route('/api/users/signout').post((req, res) => {
   req.session = null;
   res.send({});
 });
